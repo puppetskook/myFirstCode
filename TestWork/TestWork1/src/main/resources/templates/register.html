@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <title>注册页面</title>
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/signin.css" rel="stylesheet">
+</head>
+
+<body class="text-center">
+<form class="form-signin" action="#" th:action="@{/toRegister}" method="post">
+    <img class="mb-4" src="img/原神.jpg" alt="" width="72" height="72">
+    <h1 class="h3 mb-3 font-weight-normal">请填写信息</h1>
+    <p style="color:red" th:text="${msg}"></p>
+    <label class="sr-only">用户名</label>
+    <input type="text" name="name" class="form-control" placeholder="账户名" required="" autofocus="">
+
+    <label class="sr-only">年龄</label>
+    <input type="text" name="age" class="form-control" placeholder="年龄" required="">
+
+    <label class="sr-only">性别</label>
+    <input type="text" name="sex" class="form-control" placeholder="性别" required="">
+
+    <label class="sr-only">密码</label>
+    <input type="text" name="password" class="form-control" placeholder="密码" required="">
+    <button class="btn btn-lg btn-primary btn-block" type="submit">注册</button><br>
+    <a th:href="@{/toLogin}">返回</a><br>
+    <p class="mt-5 mb-3 text-muted">© 2018-2020</p>
+</form>
+
+</body>
+
+</html>

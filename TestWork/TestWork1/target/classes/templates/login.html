@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <title>软件园商城</title>
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/signin.css" rel="stylesheet">
+
+    <style>
+        #slider {
+            width: 300px;
+            margin: 20px auto;
+        }
+        #slider input {
+            width: 100%;
+        }
+        #message {
+            text-align: center;
+            color: red;
+        }
+    </style>
+
+    <style>
+        /* 无关样式 */
+        html,
+        body {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .box {
+            width: 300px;
+            height: 40px;
+            position: relative;
+        }
+
+        button {
+            margin: 20px auto 50px;
+        }
+    </style>
+
+</head>
+
+<body class="text-center">
+
+<form class="form-signin" action="#" th:action="@{/login}" method="post" id="loginForm">
+    <img class="mb-4" src="img/原神.jpg" alt="" width="72" height="72">
+    <h1 class="h3 mb-3 font-weight-normal">请登录</h1>
+    <p style="color:red" th:text="${msg}"></p>
+    <label class="sr-only">用户名</label>
+    <input type="text" name="name" class="form-control" placeholder="账户名" required="" autofocus="">
+    <label class="sr-only">密码</label>
+    <input type="password" name="password" class="form-control" placeholder="密码" required="">
+    <div class="box" id="box"></div>
+    <div id="sliderError" style="color: red; display: none;">请先完成滑块验证</div>
+    <button class="btn btn-lg btn-primary btn-block" type="submit">登录</button><br>
+    <span><a href="#" th:href="@{/toRegisterPage}">如果没有账户，请注册</a></span>
+    <p class="mt-5 mb-3 text-muted">© 2018-2020</p>
+</form>
+
+</body>
+</html>
+
+<script src="./js/sliderVerif.js"></script>
+
+<script>
+    // 存储滑块验证状态
+    let isSliderVerified = false;
+
+    var box = new sliderVerif("#box", {
+        sliderText: "请按住滑块拖动",
+        succText: "验证通过",
+        sliderTextColor: "#666",
+        succTextColor: "#fff",
+        fontSize: 1,
+        boxStyle: {
+            bg: "#e5e5e5",
+            barBg: "#5abc3c",
+            radius: 0,
+            borderWidth: 0,
+            borderColor: "#333",
+            borderStyle: "solid",
+        },
+        btnStyle: {
+            color: "#333",
+            succColor: "#5abc3c",
+            bg: "#fff",
+            succBg: "#fff",
+            radius: null,
+            borderWidth: 1,
+            borderColor: "#e5e5e5",
+            borderStyle: "solid",
+        },
+        isResizeAutoStyle: false,
+        getCompleteState: (res) => {
+            console.log(res);
+            isSliderVerified = res; // 更新验证状态
+        },
+    });
+
+    // 表单提交事件处理
+    document.getElementById('loginForm').addEventListener('submit', function(event) {
+        if (!isSliderVerified) {
+            event.preventDefault(); // 阻止表单提交
+            document.getElementById('sliderError').style.display = 'block';
+        } else {
+            document.getElementById('sliderError').style.display = 'none';
+        }
+    });
+</script>

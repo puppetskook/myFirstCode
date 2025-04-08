@@ -1,0 +1,481 @@
+
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="软件园商城 - 用户信息编辑">
+    <meta name="author" content="">
+    <title>用户信息编辑 | 软件园商城</title>
+    <!-- Bootstrap core CSS -->
+    <link href="css/bootstrap.min.css" th:href="@{/css/bootstrap.min.css}" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <!-- Custom styles -->
+    <link href="css/dashboard.css" th:href="@{/css/dashboard.css}" rel="stylesheet">
+    <style type="text/css">
+        :root {
+            --primary-color: #4e73df;
+            --secondary-color: #f8f9fc;
+            --accent-color: #2e59d9;
+            --text-color: #5a5c69;
+            --error-color: #e74a3b;
+            --success-color: #1cc88a;
+        }
+
+        body {
+            background-color: #f8f9fc;
+            color: var(--text-color);
+            font-family: 'Nunito', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+        }
+
+        .card {
+            border: none;
+            border-radius: 0.35rem;
+            box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.15);
+            margin-bottom: 1.5rem;
+        }
+
+        .card-header {
+            background-color: var(--primary-color);
+            color: white;
+            border-bottom: none;
+            padding: 1rem 1.35rem;
+            border-radius: 0.35rem 0.35rem 0 0 !important;
+        }
+
+        .form-container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 2rem;
+            background: white;
+            border-radius: 0.35rem;
+            box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.1);
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-label {
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: var(--text-color);
+        }
+
+        .form-control {
+            padding: 0.75rem 1rem;
+            border: 1px solid #d1d3e2;
+            border-radius: 0.35rem;
+            transition: border-color 0.3s ease;
+        }
+
+        .form-control:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 0.2rem rgba(78, 115, 223, 0.25);
+        }
+
+        .form-control[readonly] {
+            background-color: #f8f9fc;
+            opacity: 1;
+        }
+
+        .radio-group {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+            margin-top: 0.5rem;
+        }
+
+        .radio-option {
+            display: flex;
+            align-items: center;
+        }
+
+        .radio-option input[type="radio"] {
+            margin-right: 0.5rem;
+            width: 1.2em;
+            height: 1.2em;
+        }
+
+        .btn-primary {
+            background-color: var(--primary-color);
+            border-color: var(--primary-color);
+            padding: 0.75rem 1.5rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary:hover {
+            background-color: var(--accent-color);
+            border-color: var(--accent-color);
+            transform: translateY(-1px);
+        }
+
+        .btn-primary:focus {
+            box-shadow: 0 0 0 0.2rem rgba(78, 115, 223, 0.5);
+        }
+
+        .age-hint {
+            color: var(--error-color);
+            font-size: 0.85rem;
+            margin-top: 0.25rem;
+        }
+
+        .page-title {
+            font-weight: 600;
+            color: var(--primary-color);
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+        }
+
+        .page-title i {
+            margin-right: 0.75rem;
+            font-size: 1.5rem;
+        }
+
+        /* Animation */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .animated-content {
+            animation: fadeIn 0.5s ease-out;
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .form-container {
+                padding: 1.5rem;
+            }
+
+            .radio-group {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 0.5rem;
+            }
+        }
+    </style>
+
+    <script>
+        function validateForm() {
+            const name = document.getElementsByName('name')[0].value;
+            const age = document.getElementsByName('age')[0].value;
+            const sexOptions = document.querySelectorAll('input[name="sex"]');
+            let sexSelected = false;
+
+            if (name.trim() === "") {
+                alert("姓名不能为空，请输入有效的姓名。");
+                document.getElementsByName('name')[0].focus();
+                return false;
+            }
+
+            // 检查性别是否被选择
+            for (let i = 0; i < sexOptions.length; i++) {
+                if (sexOptions[i].checked) {
+                    sexSelected = true;
+                    break;
+                }
+            }
+
+            if (!sexSelected) {
+                alert("请选择性别");
+                return false;
+            }
+
+            if (age.trim() === "") {
+                alert("年龄不能为空，请输入有效的年龄。");
+                document.getElementsByName('age')[0].focus();
+                return false;
+            }
+
+            const ageNum = parseInt(age);
+            if (isNaN(ageNum) || ageNum < 0 || ageNum > 150) {
+                alert("年龄必须是 0 到 150 之间的数字。");
+                document.getElementsByName('age')[0].focus();
+                return false;
+            }
+
+            return true;
+        }
+
+        // 设置初始性别选择
+        document.addEventListener('DOMContentLoaded', function() {
+            const userSex = "[[${user.sex}]]";
+            if (userSex) {
+                document.querySelector(`input[name="sex"][value="${userSex}"]`).checked = true;
+            }
+        });
+    </script>
+</head>
+
+<body>
+<!--顶部菜单 -->
+<div th:replace="muen :: headmeun"></div>
+<div class="container-fluid">
+    <div class="row">
+        <!--左菜单 -->
+        <div th:replace="muen :: #sidebarMenu(lurl='usertrue')"></div>
+
+        <main role="main" class="col-md-9 ml-sm-auto col-lg-10 pt-3 px-4 animated-content">
+            <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-3 mb-4 border-bottom">
+                <h1 class="page-title">
+                    <i class="fas fa-user-edit"></i>编辑用户信息
+                </h1>
+            </div>
+
+            <div class="form-container">
+                <form action="#" th:action="@{/updateUser}" method="post" onsubmit="return validateForm();">
+                    <div class="form-group">
+                        <label class="form-label">编号:</label>
+                        <input type="text" class="form-control" name="id" th:value="${user.id}" readonly="readonly"/>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">姓名:</label>
+                        <input type="text" class="form-control" name="name" th:value="${user.name}" placeholder="请输入姓名"/>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">性别:</label>
+                        <div class="radio-group">
+                            <div class="radio-option">
+                                <input type="radio" id="male" name="sex" value="男">
+                                <label for="male">男</label>
+                            </div>
+                            <div class="radio-option">
+                                <input type="radio" id="female" name="sex" value="女">
+                                <label for="female">女</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">年龄:</label>
+                        <input type="number" class="form-control" name="age" th:value="${user.age}" placeholder="请输入年龄" min="0" max="150"/>
+                        <div class="age-hint">(年龄必须在0~150岁之间)</div>
+                    </div>
+
+                    <div class="form-group text-right">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save mr-2"></i>保存修改
+                        </button>
+                        <a href="#" class="btn btn-outline-secondary ml-2" th:href="@{/page}+'/1'+'/3'">
+                            <i class="fas fa-times mr-2"></i>取消
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </main>
+    </div>
+</div>
+
+<!-- Bootstrap core JavaScript -->
+<script type="text/javascript" src="js/jquery-3.2.1.slim.min.js" th:src="@{/js/jquery-3.2.1.slim.min.js}"></script>
+<script type="text/javascript" src="js/popper.min.js" th:src="@{/js/popper.min.js}"></script>
+<script type="text/javascript" src="js/bootstrap.min.js" th:src="@{/js/bootstrap.min.js}"></script>
+
+<!-- Icons -->
+<script type="text/javascript" src="js/feather.min.js" th:src="@{/js/feather.min.js}"></script>
+<script>
+    feather.replace()
+</script>
+
+<!-- Custom scripts -->
+<script>
+    $(document).ready(function() {
+        // 增强表单验证体验
+        $('form').on('submit', function(e) {
+            if (!validateForm()) {
+                e.preventDefault();
+                return false;
+            }
+            return true;
+        });
+
+        // 添加输入框焦点效果
+        $('.form-control').focus(function() {
+            $(this).parent().find('.form-label').css('color', 'var(--primary-color)');
+        }).blur(function() {
+            $(this).parent().find('.form-label').css('color', 'var(--text-color)');
+        });
+    });
+</script>
+
+</body>
+</html>
+
+
+<!--<!DOCTYPE html>-->
+<!--&lt;!&ndash; saved from url=(0052)http://getbootstrap.com/docs/4.0/examples/dashboard/ &ndash;&gt;-->
+<!--<html lang="en" xmlns:th="http://www.thymeleaf.org">-->
+
+<!--<head>-->
+<!--    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">-->
+<!--    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">-->
+<!--    <meta name="description" content="">-->
+<!--    <meta name="author" content="">-->
+<!--    <title>软件园商城</title>-->
+<!--    &lt;!&ndash; Bootstrap core CSS &ndash;&gt;-->
+<!--    <link href="css/bootstrap.min.css" th:href="@{/css/bootstrap.min.css}" rel="stylesheet">-->
+<!--    &lt;!&ndash; Custom styles for this template &ndash;&gt;-->
+<!--    <link href="css/dashboard.css" th:href="@{/css/dashboard.css}" rel="stylesheet">-->
+<!--    <style type="text/css">-->
+<!--        /* Chart.js */-->
+<!--        @-webkit-keyframes chartjs-render-animation {-->
+<!--            from {-->
+<!--                opacity: 0.99-->
+<!--            }-->
+<!--            to {-->
+<!--                opacity: 1-->
+<!--            }-->
+<!--        }-->
+
+<!--        @keyframes chartjs-render-animation {-->
+<!--            from {-->
+<!--                opacity: 0.99-->
+<!--            }-->
+<!--            to {-->
+<!--                opacity: 1-->
+<!--            }-->
+<!--        }-->
+
+<!--        .chartjs-render-monitor {-->
+<!--            -webkit-animation: chartjs-render-animation 0.001s;-->
+<!--            animation: chartjs-render-animation 0.001s;-->
+<!--        }-->
+<!--    </style>-->
+
+<!--    <script>-->
+<!--        function validateForm() {-->
+<!--            const name = document.getElementsByName('name')[0].value;-->
+<!--            const age = document.getElementsByName('age')[0].value;-->
+<!--            const sexOptions = document.querySelectorAll('input[name="sex"]');-->
+<!--            let sexSelected = false;-->
+
+<!--            if (name === "") {-->
+<!--                alert("姓名不能为空，请输入有效的姓名。");-->
+<!--                return false;-->
+<!--            }-->
+
+<!--            // 检查性别是否被选择-->
+<!--            for (let i = 0; i < sexOptions.length; i++) {-->
+<!--                if (sexOptions[i].checked) {-->
+<!--                    sexSelected = true;-->
+<!--                    break;-->
+<!--                }-->
+<!--            }-->
+
+<!--            if (!sexSelected) {-->
+<!--                alert("请选择性别");-->
+<!--                return false;-->
+<!--            }-->
+
+<!--            if (age === "") {-->
+<!--                alert("年龄不能为空，请输入有效的年龄。");-->
+<!--                return false;-->
+<!--            }-->
+
+<!--            const ageNum = parseInt(age);-->
+<!--            if (isNaN(ageNum) || ageNum < 0 || ageNum > 150) {-->
+<!--                alert("年龄必须是 0 到 150 之间的数字。");-->
+<!--                return false;-->
+<!--            }-->
+
+<!--            return true;-->
+<!--        }-->
+<!--    </script>-->
+<!--</head>-->
+
+<!--<body>-->
+<!--&lt;!&ndash;顶部菜单 &ndash;&gt;-->
+<!--<div th:replace="muen :: headmeun" ></div>-->
+<!--<div class="container-fluid">-->
+<!--    <div class="row">-->
+<!--        &lt;!&ndash;左菜单 &ndash;&gt;-->
+<!--        <div th:replace="muen :: #sidebarMenu(lurl='usertrue')"></div>-->
+<!--        <main role="main" class="col-md-9 ml-sm-auto col-lg-10 pt-3 px-4">-->
+
+
+<!--            <form action="#" th:action="@{/updateUser}" method="post" onsubmit="return validateForm();">-->
+<!--                <ul style="list-style: none">-->
+<!--                    <li>-->
+<!--                        <label>编号:</label>-->
+<!--                        <input type="text" name="id" th:value="${user.id}" readonly="readonly"/>-->
+<!--                    </li>-->
+<!--                    <li>-->
+<!--                        <label>姓名:</label>-->
+<!--                        <input type="text" name="name" th:value="${user.name}"/>-->
+<!--                    </li>-->
+<!--                    <li>-->
+<!--                        <label>性别:</label>-->
+<!--                        <input type="radio" id="male" name="sex" value="男">-->
+<!--                        <label for="male">男</label>-->
+<!--                        <input type="radio" id="female" name="sex" value="女">-->
+<!--                        <label for="female">女</label>-->
+<!--                    </li>-->
+<!--                    <li>-->
+<!--                        <label>年龄:</label>-->
+<!--                        <input type="text" name="age" th:value="${user.age}"/><span style="color: #bd2130">(年龄在0~150岁)</span>-->
+<!--                    </li>-->
+<!--                    <li>-->
+<!--                        <input type="submit" value="修改"/>-->
+<!--                    </li>-->
+<!--                </ul>-->
+<!--            </form>-->
+
+
+<!--        </main>-->
+<!--    </div>-->
+<!--</div>-->
+
+<!--&lt;!&ndash; Bootstrap core JavaScript-->
+<!--================================================== &ndash;&gt;-->
+<!--&lt;!&ndash; Placed at the end of the document so the pages load faster &ndash;&gt;-->
+<!--<script type="text/javascript" src="js/jquery-3.2.1.slim.min.js" th:src="@{/js/jquery-3.2.1.slim.min.js}"></script>-->
+<!--<script type="text/javascript" src="js/popper.min.js" th:src="@{/js/popper.min.js}"></script>-->
+<!--<script type="text/javascript" src="js/bootstrap.min.js" th:src="@{/js/bootstrap.min.js}"></script>-->
+
+<!--&lt;!&ndash; Icons &ndash;&gt;-->
+<!--<script type="text/javascript" src="js/feather.min.js" th:src="@{/js/feather.min.js}"></script>-->
+<!--<script>-->
+<!--    feather.replace()-->
+<!--</script>-->
+
+<!--&lt;!&ndash; Graphs &ndash;&gt;-->
+<!--<script type="text/javascript" src="js/Chart.min.js" th:src="@{/js/Chart.min.js}"></script>-->
+<!--<script>-->
+<!--    var ctx = document.getElementById("myChart");-->
+<!--    var myChart = new Chart(ctx, {-->
+<!--        type: 'line',-->
+<!--        data: {-->
+<!--            labels: ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"],-->
+<!--            datasets: [{-->
+<!--                data: [15339, 21345, 18483, 24003, 23489, 24092, 12034],-->
+<!--                lineTension: 0,-->
+<!--                backgroundColor: 'transparent',-->
+<!--                borderColor: '#007bff',-->
+<!--                borderWidth: 4,-->
+<!--                pointBackgroundColor: '#007bff'-->
+<!--            }]-->
+<!--        },-->
+<!--        options: {-->
+<!--            scales: {-->
+<!--                yAxes: [{-->
+<!--                    ticks: {-->
+<!--                        beginAtZero: false-->
+<!--                    }-->
+<!--                }]-->
+<!--            },-->
+<!--            legend: {-->
+<!--                display: false,-->
+<!--            }-->
+<!--        }-->
+<!--    });-->
+<!--</script>-->
+
+<!--</body>-->
+<!--</html>-->
